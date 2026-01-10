@@ -3,21 +3,52 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button, Input, Label, Card } from '@/components/ui/components';
-import { Lock, ArrowRight, Loader2, Rocket } from 'lucide-react';
+import { Lock, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate auth delay
-    setTimeout(() => {
-      setIsLoading(false);
-      router.push('/dashboard');
-    }, 1500);
+    setError('');
+
+    try {
+        const supabase = createClient();
+        console.log("Attempting login for:", email);
+        
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) {
+            console.error("Login error:", error);
+            if (error.message.includes("Email not confirmed")) {
+                setError("Please verify your email address before logging in.");
+            } else if (error.message.includes("Invalid login credentials")) {
+                setError("Invalid email or password.");
+            } else {
+                setError(error.message);
+            }
+            return;
+        }
+
+        console.log("Login successful, redirecting...");
+        router.push('/dashboard');
+        router.refresh(); 
+    } catch (err: any) {
+        console.error("Unexpected error:", err);
+        setError(err.message || 'Authentication failed');
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (
@@ -35,17 +66,40 @@ export default function LoginPage() {
             <p className="text-gray-400 text-sm">Enter your credentials to access the command center.</p>
         </div>
 
+        {error && (
+            <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center gap-3 text-red-400 text-sm">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                {error}
+            </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" placeholder="founder@startup.com" required className="bg-black/20 border-white/10 focus:border-brand-primary/50" />
+                <Input 
+                    id="email" 
+                    type="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="founder@startup.com" 
+                    required 
+                    className="bg-black/20 border-white/10 focus:border-brand-primary/50" 
+                />
             </div>
             <div className="space-y-2">
                 <div className="flex items-center justify-between">
                     <Label htmlFor="password">Password</Label>
                     <Link href="#" className="text-xs text-brand-primary hover:text-brand-secondary transition-colors">Forgot password?</Link>
                 </div>
-                <Input id="password" type="password" placeholder="••••••••" required className="bg-black/20 border-white/10 focus:border-brand-primary/50" />
+                <Input 
+                    id="password" 
+                    type="password" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••" 
+                    required 
+                    className="bg-black/20 border-white/10 focus:border-brand-primary/50" 
+                />
             </div>
 
             <Button type="submit" variant="premium" className="w-full h-11 text-base shadow-brand-primary/25" disabled={isLoading}>

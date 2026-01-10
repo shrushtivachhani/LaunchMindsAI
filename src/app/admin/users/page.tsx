@@ -1,18 +1,29 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Badge, Avatar, AvatarFallback, AvatarImage, Button, Input } from '@/components/ui/components';
-import { Search, MoreHorizontal, Shield, User } from 'lucide-react';
-
-const USERS = [
-    { name: "Sarah Connor", email: "sarah@skynet.com", role: "Admin", status: "Active", projects: 12 },
-    { name: "John Doe", email: "john@doe.com", role: "User", status: "Active", projects: 3 },
-    { name: "Alice Smith", email: "alice@wonder.com", role: "User", status: "Suspended", projects: 0 },
-    { name: "Bob Martin", email: "bob@builder.com", role: "User", status: "Active", projects: 5 },
-    { name: "Elena Fisher", email: "elena@uncharted.com", role: "Admin", status: "Active", projects: 8 },
-];
+import { Search, MoreHorizontal, Shield, User, Loader2 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 export default function UserManagementPage() {
+  const [users, setUsers] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        if (data) setUsers(data);
+        setIsLoading(false);
+    };
+
+    fetchUsers();
+  }, []);
+
   return (
     <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -40,44 +51,53 @@ export default function UserManagementPage() {
                     <TableRow className="border-white/5 hover:bg-transparent">
                         <TableHead className="text-gray-400">User</TableHead>
                         <TableHead className="text-gray-400">Role</TableHead>
-                        <TableHead className="text-gray-400">Status</TableHead>
-                        <TableHead className="text-gray-400">Projects</TableHead>
+                        <TableHead className="text-gray-400">Joined</TableHead>
                         <TableHead className="text-right text-gray-400">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {USERS.map((user, i) => (
-                        <TableRow key={i} className="border-white/5 hover:bg-white/5">
+                    {isLoading ? (
+                        <TableRow>
+                            <TableCell colSpan={4} className="h-24 text-center text-gray-500">
+                                <Loader2 className="w-6 h-6 animate-spin mx-auto" />
+                            </TableCell>
+                        </TableRow>
+                    ) : users.length === 0 ? (
+                        <TableRow>
+                            <TableCell colSpan={4} className="h-24 text-center text-gray-500">
+                                No users found.
+                            </TableCell>
+                        </TableRow>
+                    ) : (
+                        users.map((user) => (
+                        <TableRow key={user.id} className="border-white/5 hover:bg-white/5">
                             <TableCell className="font-medium text-white">
                                 <div className="flex items-center gap-3">
                                     <Avatar className="h-9 w-9 border border-white/10">
-                                        <AvatarFallback className="bg-brand-primary/20 text-brand-primary">{user.name.charAt(0)}</AvatarFallback>
+                                        <AvatarFallback className="bg-brand-primary/20 text-brand-primary">{(user.full_name || user.email).charAt(0).toUpperCase()}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="font-semibold">{user.name}</p>
+                                        <p className="font-semibold">{user.full_name || "Unknown"}</p>
                                         <p className="text-xs text-gray-500">{user.email}</p>
                                     </div>
                                 </div>
                             </TableCell>
                             <TableCell>
-                                <Badge variant="outline" className={`border-white/10 ${user.role === 'Admin' ? 'bg-brand-primary/10 text-brand-primary' : 'text-gray-400'}`}>
-                                    {user.role === 'Admin' ? <Shield className="w-3 h-3 mr-1" /> : <User className="w-3 h-3 mr-1" />}
+                                <Badge variant="outline" className={`border-white/10 ${user.role === 'admin' ? 'bg-brand-primary/10 text-brand-primary' : 'text-gray-400'}`}>
+                                    {user.role === 'admin' ? <Shield className="w-3 h-3 mr-1" /> : <User className="w-3 h-3 mr-1" />}
                                     {user.role}
                                 </Badge>
                             </TableCell>
-                            <TableCell>
-                                <Badge variant={user.status === 'Active' ? 'success' : 'destructive'}>
-                                    {user.status}
-                                </Badge>
+                            <TableCell className="text-gray-400">
+                                {new Date(user.created_at).toLocaleDateString()}
                             </TableCell>
-                            <TableCell className="text-gray-400">{user.projects}</TableCell>
                             <TableCell className="text-right">
                                 <Button variant="ghost" size="icon" className="hover:bg-white/10 text-gray-400">
                                     <MoreHorizontal className="w-4 h-4" />
                                 </Button>
                             </TableCell>
                         </TableRow>
-                    ))}
+                    )))}
                 </TableBody>
             </Table>
         </Card>

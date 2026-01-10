@@ -1,108 +1,115 @@
-import { AGENT_PROMPTS } from "./prompts";
-import { Agent1Output, Agent2Output, Agent3Output, Agent4Output, Agent5Output } from "../types/types";
 
-// Simulation delay helper
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+import { geminiModel } from "@/lib/gemini/client";
+import { MASTER_SYSTEM_PROMPT } from "./prompts/master";
+import { buildAgentContext, UserInputContext } from "./contextBuilder";
+import { Agent1Output, Agent2Output, Agent3Output, Agent4Output, Agent5Output } from "../types/types";
+import { AGENT_PROMPTS } from "./prompts";
 
 export class AgentEngine {
 
-    // In a real app, this would call OpenAI/Anthropic
-    static async generateAgent1(input: any): Promise<Agent1Output> {
-        await delay(2000); // Simulate thinking
-        return {
-            problem_statement: "Small businesses struggle to manage actionable financial planning without an expensive CFO.",
-            target_customer: input.targetUserType || "SMB Owners",
-            solution_description: "An AI-powered co-founder that automates financial strategy and operational planning.",
-            value_proposition: "Fractional CFO intelligence at the cost of a Netflix subscription.",
-            business_model: "B2B SaaS Subscription",
-            revenue_streams: ["Monthly Subscription ($49/mo)", "Enterprise API Access"],
-            key_assumptions: ["Users trust AI with financial data", "SMBs are willing to pay for automated advice"]
-        };
+    private static async generateResponse<T>(
+        systemPrompt: string,
+        userPrompt: string,
+        context: string
+    ): Promise<T> {
+        try {
+            const model = geminiModel;
+            const fullPrompt = `
+${MASTER_SYSTEM_PROMPT}
+
+${context}
+
+TASK SPECIFIC INSTRUCTIONS:
+${getAgentSpecificPrompt(systemPrompt)}
+
+USER TASK:
+${userPrompt}
+
+OUTPUT FORMAT:
+Ensure valid JSON output matching the interface structure.
+`;
+
+            const result = await model.generateContent(fullPrompt);
+            const response = result.response;
+            const text = response.text();
+
+            // Clean markdown code blocks if present
+            const cleanJson = text.replace(/```json\n?|\n?```/g, "").trim();
+
+            return JSON.parse(cleanJson) as T;
+        } catch (error) {
+            console.error("Gemini Generation Error:", error);
+            throw new Error("Failed to generate AI response");
+        }
     }
 
-    static async generateAgent2(input: Agent1Output): Promise<Agent2Output> {
-        await delay(2500);
-        return {
-            market: {
-                demand: "High - Growing at 15% CAGR",
-                competition: "Moderate - Few incumbents, no direct AI competitor",
-                gap: "Lack of affordable CFO solutions for small teams"
-            },
-            technical: {
-                complexity: "Medium - Requires advanced LLM integration",
-                risk: "Dependency on 3rd party AI models"
-            },
-            financial: {
-                capital_intensity: "Low - SaaS Model",
-                profit_potential: "High - High gross margins (>80%)"
-            },
-            operational: {
-                scalability: "High - Cloud native",
-                constraints: "Customer Support load at scale"
-            },
-            legal: {
-                risk_level: "Medium",
-                notes: "Financial advice regulations (fintech compliance)"
-            },
-            feasibility_score: 85,
-            recommendation: "GO",
-            top_risks: ["Regulatory changes in AI", "API Cost spikes"]
-        };
+    static async generateAgent1(input: UserInputContext): Promise<Agent1Output> {
+        const context = buildAgentContext(1, input, {});
+        return this.generateResponse<Agent1Output>(
+            "AGENT_1",
+            `Define startup concept for idea: "${input.rawIdea}"`,
+            context
+        );
     }
 
-    static async generateAgent3(input: Agent2Output): Promise<Agent3Output> {
-        await delay(3000);
-        return {
-            mandatory_documents: [
-                { name: "Certificate of Incorporation", purpose: "Legal existence", stage: "Pre-launch" },
-                { name: "Founders Agreement", purpose: "Equity split & vesting", stage: "Pre-launch" },
-                { name: "Privacy Policy", purpose: "Data protection (GDPR/DPDP)", stage: "Pre-launch" }
-            ],
-            optional_documents: [
-                { name: "Trademark Filing", purpose: "Brand protection" },
-                { name: "Advisor Agreement", purpose: "Equity for advisors" }
-            ],
-            registrations_required: ["GST Registration", "MSME Registration (Udyam)"],
-            compliance_risks: ["Data Localization Variance"],
-            generated_templates: ["Privacy Policy", "Founders Agreement"]
-        };
+    static async generateAgent2(input: Agent1Output, userInput: UserInputContext): Promise<Agent2Output> {
+        const context = buildAgentContext(2, userInput, { agent1: input });
+        return this.generateResponse<Agent2Output>(
+            "AGENT_2",
+            "Evaluate feasibility based on the defined concept.",
+            context
+        );
     }
 
-    static async generateAgent4(input: Agent3Output): Promise<Agent4Output> {
-        await delay(2000);
-        return {
-            target_personas: ["Small Business Owners (Revenue < $1M)", "Freelance Contractors"],
-            pricing_strategy: "Freemium to Pro Subscription",
-            go_to_market_plan: ["Pilot with 50 beta users", "Content Marketing on LinkedIn", "Partnerships with Accounting Firms"],
-            acquisition_channels: ["LinkedIn Ads", "SEO (Keyword: 'Virtual CFO')", "Direct Outreach"],
-            early_traction_plan: "Offer free financial health checkup for first 100 users."
-        };
+    static async generateAgent3(input: Agent2Output, userContext: any): Promise<Agent3Output> {
+        // Use userContext containing previous outputs + user input
+        const context = buildAgentContext(3, userContext.userInput, {
+            agent1: userContext.agent1,
+            agent2: input
+        });
+        return this.generateResponse<Agent3Output>(
+            "AGENT_3",
+            "Identify compliance and legal requirements.",
+            context
+        );
     }
 
-    static async generateAgent5(input: Agent4Output): Promise<Agent5Output> {
-        await delay(2500);
-        return {
-            startup_costs: {
-                "Incoperation": 500,
-                "Branding & UI": 1500,
-                "Tech Setup": 1000,
-                "Legal Retainer": 2000
-            },
-            fixed_costs: {
-                "Cloud Hosting": 200,
-                "SaaS Subscriptions": 300,
-                "Founder Salaries": 0, // Bootstrapped
-                "Office/Remote": 0
-            },
-            variable_costs: {
-                "CAC (Marketing)": 1000,
-                "Payment Processing": 50
-            },
-            monthly_burn_rate: 1550,
-            runway_months: 12,
-            contingency_percentage: "20%",
-            financial_risks: ["High CPA on LinkedIn", "Server costs scaling linearly"],
-            financial_health: "Strong"
-        };
+    static async generateAgent4(input: Agent3Output, userContext: any): Promise<Agent4Output> {
+        const context = buildAgentContext(4, userContext.userInput, {
+            agent1: userContext.agent1,
+            agent2: userContext.agent2,
+            agent3: input
+        });
+        return this.generateResponse<Agent4Output>(
+            "AGENT_4",
+            "Develop growth and marketing strategy.",
+            context
+        );
+    }
+
+    static async generateAgent5(input: Agent4Output, userContext: any): Promise<Agent5Output> {
+        const context = buildAgentContext(5, userContext.userInput, {
+            agent1: userContext.agent1,
+            agent2: userContext.agent2,
+            agent3: userContext.agent3,
+            agent4: input
+        });
+        return this.generateResponse<Agent5Output>(
+            "AGENT_5",
+            "Create financial plan and projections.",
+            context
+        );
+    }
+}
+
+function getAgentSpecificPrompt(agentId: string): string {
+    // Mapping from string key to AGENT_PROMPTS
+    switch (agentId) {
+        case "AGENT_1": return AGENT_PROMPTS.AGENT_1;
+        case "AGENT_2": return AGENT_PROMPTS.AGENT_2;
+        case "AGENT_3": return AGENT_PROMPTS.AGENT_3;
+        case "AGENT_4": return AGENT_PROMPTS.AGENT_4;
+        case "AGENT_5": return AGENT_PROMPTS.AGENT_5;
+        default: return "";
     }
 }

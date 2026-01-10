@@ -1,18 +1,38 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Badge, Button } from '@/components/ui/components';
 import { Users, FolderKanban, Cpu, AlertTriangle, ArrowUpRight, Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
-
-const STATS = [
-    { title: "Total Users", value: "2,543", change: "+12.5%", icon: Users, color: "text-brand-primary" },
-    { title: "Active Projects", value: "856", change: "+5.2%", icon: FolderKanban, color: "text-brand-secondary" },
-    { title: "Agent Runs", value: "14.2k", change: "+24%", icon: Cpu, color: "text-brand-accent" },
-    { title: "Error Rate", value: "0.04%", change: "-0.01%", icon: AlertTriangle, color: "text-red-500", negative: true },
-];
+import { createClient } from '@/lib/supabase/client';
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+      users: 0,
+      projects: 0
+  });
+  const supabase = createClient();
+
+  useEffect(() => {
+    const fetchStats = async () => {
+        const { count: usersCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
+        const { count: projectsCount } = await supabase.from('projects').select('*', { count: 'exact', head: true });
+        
+        setStats({
+            users: usersCount || 0,
+            projects: projectsCount || 0
+        });
+    };
+    fetchStats();
+  }, []);
+
+  const STATS_DATA = [
+    { title: "Total Users", value: stats.users.toLocaleString(), change: "+New", icon: Users, color: "text-brand-primary" },
+    { title: "Active Projects", value: stats.projects.toLocaleString(), change: "+Live", icon: FolderKanban, color: "text-brand-secondary" },
+    { title: "Agent Runs", value: (stats.projects * 5).toLocaleString(), change: "Est.", icon: Cpu, color: "text-brand-accent" },
+    { title: "Error Rate", value: "0.00%", change: "Stable", icon: AlertTriangle, color: "text-green-500", negative: false },
+  ];
+
   return (
     <div className="space-y-8">
         <div>
@@ -22,13 +42,13 @@ export default function AdminDashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {STATS.map((stat, i) => (
+            {STATS_DATA.map((stat, i) => (
                 <Card key={i} className="p-6 border-white/5 bg-[#121421]/50 backdrop-blur-sm">
                     <div className="flex items-center justify-between mb-4">
                         <div className={`p-2.5 rounded-lg bg-white/5 ${stat.color}`}>
                             <stat.icon className="w-5 h-5" />
                         </div>
-                        <Badge variant="outline" className={`border-white/10 ${stat.negative ? 'text-green-500' : 'text-green-500'}`}>
+                        <Badge variant="outline" className={`border-white/10 ${stat.negative ? 'text-red-500' : 'text-green-500'}`}>
                             {stat.change}
                         </Badge>
                     </div>

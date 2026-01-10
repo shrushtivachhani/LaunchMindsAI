@@ -3,21 +3,53 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button, Input, Label } from '@/components/ui/components';
-import { Loader2, ArrowRight, CheckCircle2, Star } from 'lucide-react';
+import { Loader2, ArrowRight, CheckCircle2, Star, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 export default function RegisterPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate auth delay
-    setTimeout(() => {
-      setIsLoading(false);
-      router.push('/dashboard');
-    }, 1500);
+    setError('');
+
+    try {
+        const supabase = createClient();
+        const { data, error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    full_name: `${firstName} ${lastName}`.trim(),
+                },
+            },
+        });
+
+        if (signUpError) throw signUpError;
+
+        if (data?.user && !data.session) {
+            // Email confirmation required logic
+            setError("Registration successful! Please check your email to confirm your account.");
+            setIsLoading(false);
+            return;
+        }
+
+        // Auto login handling or redirect
+        router.push('/dashboard');
+        router.refresh();
+    } catch (err: any) {
+        setError(err.message || "Registration failed");
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (
@@ -64,26 +96,63 @@ export default function RegisterPage() {
                 <p className="text-gray-400">Join 10,000+ founders building the future.</p>
             </div>
 
+            {error && (
+                <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center gap-3 text-red-400 text-sm">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    {error}
+                </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label htmlFor="firstName">First Name</Label>
-                        <Input id="firstName" placeholder="Elon" required className="bg-black/20 border-white/10" />
+                        <Input 
+                            id="firstName" 
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            placeholder="Elon" 
+                            required 
+                            className="bg-black/20 border-white/10" 
+                        />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="lastName">Last Name</Label>
-                        <Input id="lastName" placeholder="Musk" required className="bg-black/20 border-white/10" />
+                        <Input 
+                            id="lastName" 
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            placeholder="Musk" 
+                            required 
+                            className="bg-black/20 border-white/10" 
+                        />
                     </div>
                 </div>
 
                 <div className="space-y-2">
                     <Label htmlFor="email">Email Address</Label>
-                    <Input id="email" type="email" placeholder="founder@startup.com" required className="bg-black/20 border-white/10" />
+                    <Input 
+                        id="email" 
+                        type="email" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="founder@startup.com" 
+                        required 
+                        className="bg-black/20 border-white/10" 
+                    />
                 </div>
 
                 <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
-                    <Input id="password" type="password" placeholder="Min. 8 characters" required className="bg-black/20 border-white/10" />
+                    <Input 
+                        id="password" 
+                        type="password" 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Min. 8 characters" 
+                        required 
+                        className="bg-black/20 border-white/10" 
+                    />
                     <div className="flex gap-1 mt-2">
                         <div className="h-1 flex-1 rounded-full bg-red-500/50" />
                         <div className="h-1 flex-1 rounded-full bg-orange-500/50" />

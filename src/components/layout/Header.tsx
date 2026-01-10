@@ -4,6 +4,7 @@ import React from 'react';
 import { Timeline } from '@/features/orchestrator/context/Timeline';
 import { Bell, Search, Command } from 'lucide-react';
 import { Button } from '../ui/components';
+import { UserNav } from './UserNav';
 
 export const Header = () => {
     return (
@@ -29,7 +30,8 @@ export const Header = () => {
                     <Bell className="w-4 h-4" />
                     <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
                </button>
-               <div className="w-9 h-9 rounded-full bg-gradient-to-r from-brand-secondary to-blue-500 border-2 border-white/10 cursor-pointer hover:scale-105 transition-transform shadow-lg shadow-brand-secondary/20" />
+               <div className="h-8 w-[1px] bg-white/10 mx-2" />
+               <UserNav />
             </div>
         </header>
     );
