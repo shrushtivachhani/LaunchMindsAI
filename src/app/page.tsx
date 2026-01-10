@@ -26,11 +26,11 @@ export default function Home() {
             </a>
         </nav>
         <div className="flex items-center gap-4">
-            <Link href="/dashboard">
-                <Button variant="ghost" className="hidden md:inline-flex text-gray-400 hover:text-white hover:bg-white/5">Log in</Button>
+            <Link href="/auth/register">
+                <Button variant="ghost" className="hidden md:inline-flex text-gray-400 hover:text-white hover:bg-white/5">Register</Button>
             </Link>
-            <Link href="/dashboard">
-                <Button variant="premium" className="shadow-brand-primary/20">Launch App <ArrowRight className="w-4 h-4 ml-2" /></Button>
+            <Link href="/auth/login">
+                <Button variant="premium" className="shadow-brand-primary/20">Login <ArrowRight className="w-4 h-4 ml-2" /></Button>
             </Link>
         </div>
       </header>
