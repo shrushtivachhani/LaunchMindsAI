@@ -102,7 +102,7 @@ export class AgentEngine {
             runway_months: 12,
             contingency_percentage: "20%",
             financial_risks: ["High CPA on LinkedIn", "Server costs scaling linearly"],
-            financial_health: "Moderate"
+            financial_health: "Strong"
         };
     }
 }

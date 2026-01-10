@@ -89,16 +89,16 @@ export const FeasibilityView = () => {
                             
                             <h3 className="text-sm font-bold uppercase tracking-widest text-brand-secondary mb-6">Viability Score</h3>
                             <div className="flex items-end gap-6 mb-6">
-                                <span className="text-7xl font-bold text-white tracking-tighter">{state.agent2.feasibility_score}<span className="text-2xl text-gray-500 font-normal">/100</span></span>
+                                <span className="text-7xl font-bold text-white tracking-tighter">{state.agent2?.feasibility_score}<span className="text-2xl text-gray-500 font-normal">/100</span></span>
                                 <span className="px-4 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-sm font-bold mb-3 uppercase tracking-wider flex items-center gap-2">
                                     <CheckCircle2 className="w-4 h-4" />
-                                    {state.agent2.recommendation} - Proceed
+                                    {state.agent2?.recommendation} - Proceed
                                 </span>
                             </div>
                             <div className="w-full bg-gray-800/50 h-3 rounded-full mt-2 overflow-hidden border border-white/5">
                                 <motion.div 
                                     initial={{ width: 0 }}
-                                    animate={{ width: `${state.agent2.feasibility_score}%` }}
+                                    animate={{ width: `${state.agent2?.feasibility_score}%` }}
                                     className="h-full bg-gradient-to-r from-brand-secondary to-green-400 shadow-[0_0_15px_rgba(0,206,201,0.5)]"
                                 />
                             </div>
@@ -110,7 +110,7 @@ export const FeasibilityView = () => {
                                 Critical Risks
                             </h3>
                             <ul className="space-y-4">
-                                {state.agent2.top_risks.map((risk, i) => (
+                                {state.agent2?.top_risks.map((risk, i) => (
                                     <li key={i} className="flex items-start gap-3 text-sm text-red-200/90 leading-relaxed bg-red-500/10 p-3 rounded-lg border border-red-500/10">
                                         <XCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-400" />
                                         {risk}
@@ -127,11 +127,11 @@ export const FeasibilityView = () => {
                             <div className="space-y-6">
                                 <div>
                                     <span className="text-xs text-brand-secondary block mb-1">Demand Velocity</span>
-                                    <p className="font-medium text-lg text-white">{state.agent2.market.demand}</p>
+                                    <p className="font-medium text-lg text-white">{state.agent2?.market.demand}</p>
                                 </div>
                                 <div>
                                     <span className="text-xs text-brand-secondary block mb-1">Competitive Landscape</span>
-                                    <p className="font-medium text-lg text-white">{state.agent2.market.competition}</p>
+                                    <p className="font-medium text-lg text-white">{state.agent2?.market.competition}</p>
                                 </div>
                             </div>
                         </Card>
@@ -140,15 +140,15 @@ export const FeasibilityView = () => {
                             <div className="space-y-6">
                                 <div>
                                     <span className="text-xs text-orange-400 block mb-1">Technical Complexity</span>
-                                    <p className="font-medium text-lg text-white">{state.agent2.technical.complexity}</p>
+                                    <p className="font-medium text-lg text-white">{state.agent2?.technical.complexity}</p>
                                 </div>
                                 <div>
                                     <span className="text-xs text-red-400 block mb-1">Compliance Barrier</span>
                                     <div className="flex items-center gap-3">
-                                        <div className={`w-2.5 h-2.5 rounded-full ${state.agent2.legal.risk_level === 'High' ? 'bg-red-500 shadow-[0_0_10px_red]' : 'bg-yellow-500 shadow-[0_0_10px_orange]'}`} />
-                                        <p className="font-medium text-lg text-white">{state.agent2.legal.risk_level}</p>
+                                        <div className={`w-2.5 h-2.5 rounded-full ${state.agent2?.legal.risk_level === 'High' ? 'bg-red-500 shadow-[0_0_10px_red]' : 'bg-yellow-500 shadow-[0_0_10px_orange]'}`} />
+                                        <p className="font-medium text-lg text-white">{state.agent2?.legal.risk_level}</p>
                                     </div>
-                                    <p className="text-xs text-gray-500 mt-2 italic">{state.agent2.legal.notes}</p>
+                                    <p className="text-xs text-gray-500 mt-2 italic">{state.agent2?.legal.notes}</p>
                                 </div>
                             </div>
                         </Card>
