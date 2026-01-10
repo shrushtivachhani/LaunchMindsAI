@@ -1,11 +1,11 @@
 "use client";
 
 import React from 'react';
-import { useOrchestrator } from '../orchestrator/OrchestratorContext';
+import { useOrchestrator } from '@/features/orchestrator/context/OrchestratorContext';
 import { Button, Card } from '@/components/ui/components';
 import { TrendingUp, Users, Target, Rocket, ArrowRight, Loader2, Megaphone } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Agent4Output } from '@/lib/agents/types';
+import { Agent4Output } from '@/features/agents/types/types';
 
 export const GrowthView = () => {
     const { state, setAgent4Data, nextStep, isProcessing, setIsProcessing } = useOrchestrator();

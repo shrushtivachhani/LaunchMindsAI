@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { 
   ProjectState, 
   Agent1Output, Agent2Output, Agent3Output, Agent4Output, Agent5Output 
-} from '@/lib/agents/types';
+} from '@/features/agents/types/types';
 
 interface OrchestratorContextType {
   state: ProjectState;

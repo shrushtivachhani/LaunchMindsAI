@@ -1,11 +1,11 @@
 "use client";
 
 import React from 'react';
-import { useOrchestrator } from '../orchestrator/OrchestratorContext';
+import { useOrchestrator } from '@/features/orchestrator/context/OrchestratorContext';
 import { Button, Card } from '@/components/ui/components';
 import { ShieldAlert, CheckCircle2, AlertTriangle, XCircle, ArrowRight, Loader2, BarChart2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Agent2Output } from '@/lib/agents/types';
+import { Agent2Output } from '@/features/agents/types/types';
 
 export const FeasibilityView = () => {
     const { state, setAgent2Data, nextStep, isProcessing, setIsProcessing } = useOrchestrator();

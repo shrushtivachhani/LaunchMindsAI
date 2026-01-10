@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { OrchestratorProvider } from '@/components/orchestrator/OrchestratorContext';
+import { OrchestratorProvider } from '@/features/orchestrator/context/OrchestratorContext';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 

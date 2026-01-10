@@ -1,5 +1,5 @@
 import { AGENT_PROMPTS } from "./prompts";
-import { Agent1Output, Agent2Output, Agent3Output, Agent4Output, Agent5Output } from "./types";
+import { Agent1Output, Agent2Output, Agent3Output, Agent4Output, Agent5Output } from "../types/types";
 
 // Simulation delay helper
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Timeline } from '../orchestrator/Timeline';
+import { Timeline } from '@/features/orchestrator/context/Timeline';
 import { Bell, Search, Command } from 'lucide-react';
 import { Button } from '../ui/components';
 

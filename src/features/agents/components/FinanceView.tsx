@@ -1,11 +1,11 @@
 "use client";
 
 import React from 'react';
-import { useOrchestrator } from '../orchestrator/OrchestratorContext';
+import { useOrchestrator } from '@/features/orchestrator/context/OrchestratorContext';
 import { Button, Card } from '@/components/ui/components';
 import { DollarSign, PieChart, TrendingDown, Wallet, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Agent5Output } from '@/lib/agents/types';
+import { Agent5Output } from '@/features/agents/types/types';
 
 const MoneyCard = ({ label, value, subtext }: { label: string, value: string, subtext?: string }) => (
     <Card className="p-6 border-white/5 bg-[#121421]/60 hover:bg-[#121421]/80 transition-colors group">

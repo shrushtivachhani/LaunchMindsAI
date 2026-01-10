@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { useOrchestrator } from '../orchestrator/OrchestratorContext';
+import { useOrchestrator } from '@/features/orchestrator/context/OrchestratorContext';
 import { Button, Card } from '@/components/ui/components';
 import { Rocket, Download, Share2, CheckCircle2, AlertTriangle, FileText, DollarSign, Layers } from 'lucide-react';
 import { motion } from 'framer-motion';

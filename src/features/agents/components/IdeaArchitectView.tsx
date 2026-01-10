@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useOrchestrator } from '../orchestrator/OrchestratorContext';
+import { useOrchestrator } from '@/features/orchestrator/context/OrchestratorContext';
 import { Button, Input, Textarea, Label, Card } from '@/components/ui/components';
-import { Agent1Input } from '@/lib/agents/types';
+import { Agent1Input } from '@/features/agents/types/types';
 import { Brain, Sparkles, ArrowRight, Loader2, Lightbulb } from 'lucide-react';
 import { motion } from 'framer-motion';
 

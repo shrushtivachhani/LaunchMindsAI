@@ -1,11 +1,11 @@
 "use client";
 
 import React from 'react';
-import { useOrchestrator } from '../orchestrator/OrchestratorContext';
+import { useOrchestrator } from '@/features/orchestrator/context/OrchestratorContext';
 import { Button, Card } from '@/components/ui/components';
 import { FileText, Check, ShieldCheck, Download, Loader2, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Agent3Output } from '@/lib/agents/types';
+import { Agent3Output } from '@/features/agents/types/types';
 
 export const ComplianceView = () => {
     const { state, setAgent3Data, nextStep, isProcessing, setIsProcessing } = useOrchestrator();

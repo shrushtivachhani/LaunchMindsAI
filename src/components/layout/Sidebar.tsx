@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { useOrchestrator } from '../orchestrator/OrchestratorContext';
+import { useOrchestrator } from '@/features/orchestrator/context/OrchestratorContext';
 import { Brain, ShieldAlert, FileText, TrendingUp, DollarSign, Rocket, Layers, CheckCircle, CircleDashed, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

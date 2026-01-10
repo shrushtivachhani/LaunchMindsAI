@@ -1,16 +1,16 @@
 "use client";
 
 import React from 'react';
-import { useOrchestrator } from '@/components/orchestrator/OrchestratorContext';
+import { useOrchestrator } from '@/features/orchestrator/context/OrchestratorContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Import Views
-import { IdeaArchitectView } from '@/components/agents/IdeaArchitectView';
-import { FeasibilityView } from '@/components/agents/FeasibilityView';
-import { ComplianceView } from '@/components/agents/ComplianceView';
-import { GrowthView } from '@/components/agents/GrowthView';
-import { FinanceView } from '@/components/agents/FinanceView';
-import { LaunchBlueprintView } from '@/components/agents/LaunchBlueprintView';
+import { IdeaArchitectView } from '@/features/agents/components/IdeaArchitectView';
+import { FeasibilityView } from '@/features/agents/components/FeasibilityView';
+import { ComplianceView } from '@/features/agents/components/ComplianceView';
+import { GrowthView } from '@/features/agents/components/GrowthView';
+import { FinanceView } from '@/features/agents/components/FinanceView';
+import { LaunchBlueprintView } from '@/features/agents/components/LaunchBlueprintView';
 
 export default function DashboardPage() {
   const { state } = useOrchestrator();
