@@ -9,13 +9,12 @@ import { UserNav } from './UserNav';
 export const Header = () => {
     return (
         <header className="h-20 border-b border-white/5 bg-[#0B0E14]/80 backdrop-blur-xl sticky top-0 z-40 flex items-center px-8 justify-between shadow-xl shadow-black/20">
-            <div className="w-1/3 flex items-center gap-4">
-                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white/5 border border-white/10 text-muted-foreground text-xs">
-                    <Command className="w-3.5 h-3.5" />
-                    <span>Cmd + K</span>
-                 </div>
-                 <div className="h-4 w-[1px] bg-white/10" />
-                 <span className="text-sm text-gray-400 font-medium">New Venture Protocol</span>
+
+            
+            <div className="w-1/3 flex items-center gap-2 text-sm text-gray-500">
+                <span className="hover:text-white transition-colors cursor-pointer">Dashboard</span>
+                <span className="text-white/20">/</span>
+                <span className="text-white font-medium">Overview</span>
             </div>
             
             <div className="flex-1 flex justify-center">

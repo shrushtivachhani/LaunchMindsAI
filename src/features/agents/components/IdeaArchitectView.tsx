@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useOrchestrator } from '@/features/orchestrator/context/OrchestratorContext';
 import { Button, Input, Textarea, Label, Card } from '@/components/ui/components';
 import { Agent1Input } from '@/features/agents/types/types';
+import { AgentEngine } from '@/features/agents/utils/engine';
 import { Brain, Sparkles, ArrowRight, Loader2, Lightbulb } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -24,22 +25,25 @@ export const IdeaArchitectView = () => {
         e.preventDefault();
         setIsProcessing(true);
 
-        // Simulate AI Thinking
-        setTimeout(() => {
-            // Mock Output
-            setAgent1Data({
-                problem_statement: "Small businesses struggle to manage actionable financial planning without an expensive CFO.",
-                target_customer: formData.targetUserType || "SMB Owners",
-                solution_description: "An AI-powered co-founder that automates financial strategy and operational planning.",
-                value_proposition: "Fractional CFO intelligence at the cost of a Netflix subscription.",
-                business_model: "B2B SaaS Subscription",
-                revenue_streams: ["Monthly Subscription ($49/mo)", "Enterprise API Access"],
-                key_assumptions: ["Users trust AI with financial data", "SMBs are willing to pay for automated advice"]
+        try {
+            // REAL GEMINI CALL
+            const result = await AgentEngine.generateAgent1({
+                rawIdea: formData.rawIdea,
+                industry: formData.industry,
+                geography: formData.geography,
+                targetUserType: formData.targetUserType
             });
-            
-            setIsProcessing(false);
+
+            console.log("Agent 1 Result:", result);
+            setAgent1Data(result);
             nextStep();
-        }, 2000);
+        } catch (error: any) {
+            console.error("Agent 1 Failed:", error);
+            // Show REAL error to user for debugging
+            alert(`Error: ${error.message}`);
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     return (

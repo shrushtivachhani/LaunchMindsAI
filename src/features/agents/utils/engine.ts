@@ -13,33 +13,12 @@ export class AgentEngine {
         context: string
     ): Promise<T> {
         try {
-            const model = geminiModel;
-            const fullPrompt = `
-${MASTER_SYSTEM_PROMPT}
-
-${context}
-
-TASK SPECIFIC INSTRUCTIONS:
-${getAgentSpecificPrompt(systemPrompt)}
-
-USER TASK:
-${userPrompt}
-
-OUTPUT FORMAT:
-Ensure valid JSON output matching the interface structure.
-`;
-
-            const result = await model.generateContent(fullPrompt);
-            const response = result.response;
-            const text = response.text();
-
-            // Clean markdown code blocks if present
-            const cleanJson = text.replace(/```json\n?|\n?```/g, "").trim();
-
-            return JSON.parse(cleanJson) as T;
+            // Call Server Action
+            const { generateAIResponse } = await import('../actions/groqActions');
+            return await generateAIResponse(systemPrompt, userPrompt, context) as T;
         } catch (error) {
             console.error("Gemini Generation Error:", error);
-            throw new Error("Failed to generate AI response");
+            throw new Error(`Failed to generate AI response: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
 

@@ -1,28 +1,37 @@
 "use client";
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { useOrchestrator } from '@/features/orchestrator/context/OrchestratorContext';
 import { Button, Card } from '@/components/ui/components';
+import { AgentEngine } from '@/features/agents/utils/engine';
 import { TrendingUp, Users, Target, Rocket, ArrowRight, Loader2, Megaphone } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Agent4Output } from '@/features/agents/types/types';
 
 export const GrowthView = () => {
     const { state, setAgent4Data, nextStep, isProcessing, setIsProcessing } = useOrchestrator();
 
-    const handleDesign = () => {
+    const handleDesign = async () => {
         setIsProcessing(true);
-        setTimeout(() => {
-             const mockData: Agent4Output = {
-                target_personas: ["Business Owners (<$1M Revenue)", "Freelance Contractors", "Startup Founders"],
-                pricing_strategy: "Freemium ($0) → Pro ($49/mo) → Enterprise (Custom)",
-                go_to_market_plan: ["Pilot with 50 beta users", "Content Marketing on LinkedIn", "Partnerships with Accounting Firms"],
-                acquisition_channels: ["LinkedIn Ads (Target: Founders)", "SEO (Keyword: 'Virtual CFO')", "Cold Email Outreach"],
-                early_traction_plan: "Launch a 'Free Financial Health Check' tool to capture leads, then nurture them into the paid plan via a 5-day email course."
-             };
-            setAgent4Data(mockData);
+        try {
+            const userContext = { 
+                userInput: {
+                     rawIdea: state.agent1?.solution_description || "Startup", 
+                     industry: "Unknown", geography: "Global", targetUserType: state.agent1?.target_customer
+                },
+                agent1: state.agent1,
+                agent2: state.agent2,
+                agent3: state.agent3
+            };
+            const result = await AgentEngine.generateAgent4(state.agent3!, userContext);
+            setAgent4Data(result);
+            nextStep();
+
+        } catch (error: any) {
+            console.error("Agent 4 Failed:", error);
+            alert(`Growth Strategy Failed: ${error.message}`);
+        } finally {
             setIsProcessing(false);
-        }, 2000);
+        }
     };
 
     const hasData = !!state.agent4;
@@ -71,7 +80,7 @@ export const GrowthView = () => {
                                 <h3 className="font-bold uppercase tracking-wider text-sm text-gray-300">Target Personas (ICP)</h3>
                             </div>
                             <div className="space-y-3">
-                                {state.agent4?.target_personas.map((persona, i) => (
+                                {state.agent4?.target_personas?.map((persona, i) => (
                                     <div key={i} className="p-4 bg-black/20 rounded-xl border border-white/5 hover:border-orange-500/30 transition-all flex items-center gap-4 group">
                                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500/20 to-orange-600/5 text-orange-500 flex items-center justify-center text-xs font-bold border border-orange-500/10 group-hover:bg-orange-500 group-hover:text-white transition-colors">
                                             {i+1}
@@ -89,7 +98,7 @@ export const GrowthView = () => {
                                 <h3 className="font-bold uppercase tracking-wider text-sm text-gray-300">Capture Channels</h3>
                             </div>
                             <div className="flex flex-wrap gap-2.5">
-                                {state.agent4?.acquisition_channels.map((channel, i) => (
+                                {state.agent4?.acquisition_channels?.map((channel, i) => (
                                     <span key={i} className="px-3.5 py-2 rounded-lg bg-orange-500/5 border border-orange-500/20 text-orange-200 text-sm font-medium hover:bg-orange-500/10 cursor-default transition-colors">
                                         {channel}
                                     </span>
@@ -97,7 +106,11 @@ export const GrowthView = () => {
                             </div>
                             <div className="mt-8 pt-6 border-t border-white/10">
                                 <span className="text-xs text-gray-500 uppercase font-bold tracking-widest mb-2 block">Pricing Structure</span>
-                                <p className="text-lg font-bold text-white tracking-tight">{state.agent4?.pricing_strategy}</p>
+                                <p className="text-lg font-bold text-white tracking-tight">
+                                    {typeof state.agent4?.pricing_strategy === 'object' 
+                                        ? JSON.stringify(state.agent4?.pricing_strategy) 
+                                        : state.agent4?.pricing_strategy}
+                                </p>
                             </div>
                         </Card>
 

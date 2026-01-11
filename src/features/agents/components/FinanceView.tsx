@@ -1,11 +1,11 @@
 "use client";
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { useOrchestrator } from '@/features/orchestrator/context/OrchestratorContext';
 import { Button, Card } from '@/components/ui/components';
+import { AgentEngine } from '@/features/agents/utils/engine';
 import { DollarSign, PieChart, TrendingDown, Wallet, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Agent5Output } from '@/features/agents/types/types';
 
 const MoneyCard = ({ label, value, subtext }: { label: string, value: string, subtext?: string }) => (
     <Card className="p-6 border-white/5 bg-[#121421]/60 hover:bg-[#121421]/80 transition-colors group">
@@ -18,35 +18,26 @@ const MoneyCard = ({ label, value, subtext }: { label: string, value: string, su
 export const FinanceView = () => {
     const { state, setAgent5Data, nextStep, isProcessing, setIsProcessing } = useOrchestrator();
 
-    const handleBudget = () => {
+    const handleBudget = async () => {
         setIsProcessing(true);
-        setTimeout(() => {
-             const mockData: Agent5Output = {
-                startup_costs: {
-                    "Incoperation": 500,
-                    "Branding & UI": 1500,
-                    "Tech Infrastructure": 1000,
-                    "Legal Retainer": 2000
+        try {
+            const userContext = { 
+                userInput: {
+                     rawIdea: state.agent1?.solution_description || "Startup", 
+                     industry: "Unknown", geography: "Global", targetUserType: state.agent1?.target_customer
                 },
-                fixed_costs: {
-                    "Cloud Hosting": 200,
-                    "SaaS Subscriptions": 300,
-                    "Founder Salaries": 0, // Bootstrapped
-                    "Office/Remote": 0
-                },
-                variable_costs: {
-                    "CAC (Marketing)": 1000,
-                    "Payment Processing": 50
-                },
-                monthly_burn_rate: 1550,
-                runway_months: 12,
-                contingency_percentage: "20%",
-                financial_risks: ["High CPA on Paid Channels", "API Cost scaling"],
-                financial_health: "Strong"
-             };
-            setAgent5Data(mockData);
+                agent1: state.agent1, agent2: state.agent2, agent3: state.agent3, agent4: state.agent4
+            };
+            const result = await AgentEngine.generateAgent5(state.agent4!, userContext);
+            setAgent5Data(result);
+            // No nextStep() as this is the final agent
+
+        } catch (error: any) {
+            console.error("Agent 5 Failed:", error);
+            alert(`Financial Modeling Failed: ${error.message}`);
+        } finally {
             setIsProcessing(false);
-        }, 2500);
+        }
     };
 
     const hasData = !!state.agent5;
@@ -91,11 +82,11 @@ export const FinanceView = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <MoneyCard 
                             label="Startup Capital" 
-                            value={`$${state.agent5 ? Object.values(state.agent5.startup_costs).reduce((a, b) => a + b, 0).toLocaleString() : 0}`} 
+                            value={`$${state.agent5 ? Object.values(state.agent5.startup_costs || {}).reduce((a, b) => a + b, 0).toLocaleString() : 0}`} 
                         />
                         <MoneyCard 
                             label="Monthly Burn" 
-                            value={`$${state.agent5?.monthly_burn_rate.toLocaleString()}`} 
+                            value={`$${(state.agent5?.monthly_burn_rate || 0).toLocaleString()}`} 
                             subtext="Fixed + Variable"
                         />
                          <MoneyCard 
@@ -117,7 +108,7 @@ export const FinanceView = () => {
                                 <Wallet className="w-4 h-4" /> Startup Costs (One-time)
                             </h3>
                             <div className="space-y-3">
-                                {state.agent5 && Object.entries(state.agent5.startup_costs).map(([key, val]) => (
+                                {state.agent5 && Object.entries(state.agent5.startup_costs || {}).map(([key, val]) => (
                                     <div key={key} className="flex justify-between items-center text-sm border-b border-white/5 pb-3">
                                         <span className="text-gray-300">{key}</span>
                                         <span className="font-mono text-purple-200 font-medium">${val.toLocaleString()}</span>
@@ -134,7 +125,7 @@ export const FinanceView = () => {
                                 <div>
                                     <span className="text-xs text-purple-400 font-bold mb-3 block">Fixed Costs</span>
                                     <div className="space-y-2">
-                                         {state.agent5 && Object.entries(state.agent5.fixed_costs).map(([key, val]) => (
+                                         {state.agent5 && Object.entries(state.agent5.fixed_costs || {}).map(([key, val]) => (
                                             <div key={key} className="flex justify-between items-center text-sm">
                                                 <span className="text-gray-400">{key}</span>
                                                 <span className="font-mono text-white">${val.toLocaleString()}</span>
@@ -145,7 +136,7 @@ export const FinanceView = () => {
                                 <div className="pt-4 border-t border-white/5">
                                     <span className="text-xs text-purple-400 font-bold mb-3 block">Variable Costs (Est.)</span>
                                      <div className="space-y-2">
-                                         {state.agent5 && Object.entries(state.agent5.variable_costs).map(([key, val]) => (
+                                         {state.agent5 && Object.entries(state.agent5.variable_costs || {}).map(([key, val]) => (
                                             <div key={key} className="flex justify-between items-center text-sm">
                                                 <span className="text-gray-400">{key}</span>
                                                 <span className="font-mono text-white">${val.toLocaleString()}</span>
@@ -163,7 +154,7 @@ export const FinanceView = () => {
                         <div>
                             <h4 className="font-bold text-sm text-orange-400">Financial Risk Assessment</h4>
                             <ul className="list-disc list-inside text-sm text-gray-400 mt-2 space-y-1">
-                                {state.agent5?.financial_risks.map((risk, i) => <li key={i}>{risk}</li>)}
+                                {state.agent5?.financial_risks?.map((risk, i) => <li key={i}>{risk}</li>)}
                             </ul>
                         </div>
                     </div>

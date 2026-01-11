@@ -1,35 +1,40 @@
 "use client";
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { useOrchestrator } from '@/features/orchestrator/context/OrchestratorContext';
 import { Button, Card } from '@/components/ui/components';
+import { AgentEngine } from '@/features/agents/utils/engine';
 import { FileText, Check, ShieldCheck, Download, Loader2, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Agent3Output } from '@/features/agents/types/types';
 
 export const ComplianceView = () => {
     const { state, setAgent3Data, nextStep, isProcessing, setIsProcessing } = useOrchestrator();
 
-    const handleGenerate = () => {
+    const handleGenerate = async () => {
         setIsProcessing(true);
-        setTimeout(() => {
-            const mockData: Agent3Output = {
-               mandatory_documents: [
-                   { name: "Certificate of Incorporation", purpose: "Legal existence", stage: "Pre-launch" },
-                   { name: "Founders Agreement", purpose: "Equity split & vesting", stage: "Pre-launch" },
-                   { name: "Privacy Policy", purpose: "Data protection (GDPR/DPDP)", stage: "Pre-launch" }
-               ],
-               optional_documents: [
-                   { name: "Trademark Filing", purpose: "Brand protection" },
-                   { name: "Advisor Agreement", purpose: "Equity for advisors" }
-               ],
-               registrations_required: ["GST Registration", "MSME Registration (Udyam)"],
-               compliance_risks: ["Data Localization Variance"],
-               generated_templates: ["Privacy Policy", "Founders Agreement"]
+        try {
+             // Pass previous context (Agent 1 + Agent 2)
+             const userContext = { 
+                userInput: {
+                     rawIdea: state.agent1?.solution_description || "Startup", 
+                     industry: "Unknown",
+                     geography: "Global",
+                     targetUserType: state.agent1?.target_customer || "Users"
+                },
+                agent1: state.agent1,
+                agent2: state.agent2
             };
-            setAgent3Data(mockData);
+            
+            const result = await AgentEngine.generateAgent3(state.agent2!, userContext);
+            setAgent3Data(result);
+            nextStep();
+
+        } catch (error: any) {
+            console.error("Agent 3 Failed:", error);
+            alert(`Compliance Check Failed: ${error.message}`);
+        } finally {
             setIsProcessing(false);
-        }, 3000);
+        }
     };
 
     const hasData = !!state.agent3;
@@ -78,7 +83,7 @@ export const ComplianceView = () => {
                                 <h3 className="font-bold text-brand-accent uppercase tracking-wider text-sm">Mandatory Documents</h3>
                             </div>
                             <div className="p-5 space-y-3">
-                                {state.agent3?.mandatory_documents.map((doc, i) => (
+                                {state.agent3?.mandatory_documents?.map((doc, i) => (
                                     <div key={i} className="flex items-start gap-4 p-4 rounded-xl bg-black/20 border border-white/5 hover:border-brand-accent/30 transition-colors group">
                                         <div className="mt-1 w-6 h-6 rounded-full bg-brand-accent/20 flex items-center justify-center shrink-0 border border-brand-accent/10 group-hover:bg-brand-accent group-hover:text-white transition-colors">
                                             <Check className="w-3.5 h-3.5" />
@@ -103,7 +108,7 @@ export const ComplianceView = () => {
                             </div>
                             <div className="p-5">
                                 <ul className="space-y-3">
-                                    {state.agent3?.registrations_required.map((reg, i) => (
+                                    {state.agent3?.registrations_required?.map((reg, i) => (
                                         <li key={i} className="flex items-center gap-3 text-sm text-gray-300 p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
                                             <div className="w-2 h-2 rounded-full bg-orange-400 shadow-[0_0_8px_orange]" />
                                             {reg}
@@ -117,7 +122,7 @@ export const ComplianceView = () => {
                                         Auto-Generated Templates
                                     </h4>
                                     <div className="flex flex-wrap gap-3">
-                                        {state.agent3?.generated_templates.map((tmpl, i) => (
+                                        {state.agent3?.generated_templates?.map((tmpl, i) => (
                                              <Button key={i} variant="outline" size="sm" className="h-9 text-xs border-dashed border-white/20 bg-transparent hover:bg-brand-accent/10 hover:text-brand-accent hover:border-brand-accent/30 transition-all">
                                                 <Download className="w-3 h-3 mr-2 opacity-70" />
                                                 {tmpl} PDF

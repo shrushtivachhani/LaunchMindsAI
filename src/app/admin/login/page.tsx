@@ -20,46 +20,21 @@ export default function AdminLoginPage() {
     setIsLoading(true);
     setError(null);
 
-    try {
-        // 1. Authenticate
-        const { data: { user }, error: authError } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
-
-        if (authError) throw authError;
-
-        if (!user) throw new Error("Authentication failed");
-
-        // 2. Authorization Check (Strict)
-        const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', user.id)
-            .single();
-
-        if (profileError || !profile) {
-            // Should not happen for valid users, but handles edge cases
-            await supabase.auth.signOut();
-            throw new Error("Profile verification failed.");
+    // MOCK AUTHENTICATION - NO DATABASE REQUIRED
+    setTimeout(() => {
+        if (email.toLowerCase() === 'admin@launchminds.ai' && password === 'admin123') {
+            // Set simple cookie for middleware to read
+            document.cookie = "mock_session=admin; path=/";
+            document.cookie = "mock_user_email=" + email + "; path=/";
+            document.cookie = "mock_user_role=admin; path=/";
+            
+            router.push('/admin/dashboard');
+            router.refresh();
+        } else {
+            setError("Invalid Admin Credentials. try: admin@launchminds.ai / admin123");
+            setIsLoading(false);
         }
-
-        if (profile.role !== 'admin') {
-            // CRITICAL: Force logout if not admin
-            await supabase.auth.signOut();
-            throw new Error("ACCESS DENIED: Insufficient permissions.");
-        }
-
-        // 3. Redirect to Admin Dashboard
-        router.push('/admin/dashboard');
-        router.refresh();
-
-    } catch (err: any) {
-        console.error("Admin Login Error:", err);
-        setError(err.message || "Admin authentication failed");
-    } finally {
-        setIsLoading(false);
-    }
+    }, 1000); 
   };
 
   return (

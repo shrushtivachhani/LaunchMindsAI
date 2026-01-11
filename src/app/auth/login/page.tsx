@@ -19,36 +19,28 @@ export default function LoginPage() {
     setIsLoading(true);
     setError('');
 
-    try {
-        const supabase = createClient();
-        console.log("Attempting login for:", email);
-        
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
-
-        if (error) {
-            console.error("Login error:", error);
-            if (error.message.includes("Email not confirmed")) {
-                setError("Please verify your email address before logging in.");
-            } else if (error.message.includes("Invalid login credentials")) {
-                setError("Invalid email or password.");
-            } else {
-                setError(error.message);
-            }
+    // MOCK USER AUTH
+    setTimeout(() => {
+        if (email.toLowerCase() === 'admin@launchminds.ai') {
+            setError("Please use the Admin Login page for this account.");
+            setIsLoading(false);
             return;
         }
 
-        console.log("Login successful, redirecting...");
+        if (password.length < 6) {
+             setError("Password must be at least 6 characters.");
+             setIsLoading(false);
+             return;
+        }
+
+        // Success for any other user
+        document.cookie = "mock_session=user; path=/";
+        document.cookie = "mock_user_email=" + email + "; path=/";
+        document.cookie = "mock_user_role=user; path=/";
+        
         router.push('/dashboard');
-        router.refresh(); 
-    } catch (err: any) {
-        console.error("Unexpected error:", err);
-        setError(err.message || 'Authentication failed');
-    } finally {
-        setIsLoading(false);
-    }
+        router.refresh();
+    }, 800);
   };
 
   return (

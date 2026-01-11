@@ -16,25 +16,41 @@ export function UserNav() {
   const supabase = createClient();
 
   useEffect(() => {
-    const getUserData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-          // Fetch additional profile data like role
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', user.id)
-            .single();
-          
-          setUser({ ...user, role: profile?.role || 'user' });
-      }
-      setIsLoading(false);
+    // MOCK AUTH CHECK
+    const getMockUser = () => {
+        const cookies = document.cookie.split(';');
+        let mockSession = null;
+        let mockEmail = 'user@example.com';
+        let mockRole = 'user';
+
+        cookies.forEach(cookie => {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'mock_session') mockSession = value;
+            if (name === 'mock_user_email') mockEmail = value;
+            if (name === 'mock_user_role') mockRole = value;
+        });
+
+        if (mockSession) {
+             setUser({
+                 id: 'mock-user-id',
+                 email: mockEmail,
+                 role: mockRole,
+                 user_metadata: {
+                     full_name: mockRole === 'admin' ? 'System Admin' : 'Founder User'
+                 }
+             });
+        }
+        setIsLoading(false);
     };
-    getUserData();
+    getMockUser();
   }, []);
 
   const handleLogout = async () => {
-      await supabase.auth.signOut();
+      // Clear Mock Cookies
+      document.cookie = "mock_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+      document.cookie = "mock_user_email=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+      document.cookie = "mock_user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+      
       router.push('/auth/login');
       router.refresh(); 
   };

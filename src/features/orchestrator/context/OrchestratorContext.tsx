@@ -34,33 +34,25 @@ export const OrchestratorProvider = ({ children }: { children: ReactNode }) => {
   const [isLoadingProject, setIsLoadingProject] = useState(true);
   const supabase = createClient();
 
+  // MOCK PERSISTENCE
   useEffect(() => {
     const loadProject = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setIsLoadingProject(false);
-        return;
-      }
-
-      // Try to load the most recent project
-      const { data: projects } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('updated_at', { ascending: false })
-        .limit(1);
-
-      if (projects && projects.length > 0) {
-        // Hydrate state
-        const project = projects[0];
-        setProjectId(project.id);
-        setState(prev => ({ 
-            ...prev, 
-            ...project.data, 
-            currentStep: project.current_step 
-        }));
-      } else {
-        // No project found, we will create one on the first save
+      // Allow UI to settle
+      await new Promise(r => setTimeout(r, 500));
+      
+      const saved = localStorage.getItem('mock_project_data');
+      if (saved) {
+          try {
+              const parsed = JSON.parse(saved);
+              setState(prev => ({ 
+                  ...prev, 
+                  ...parsed,
+                  currentStep: parsed.currentStep || 0
+              }));
+              setProjectId('mock-project-id');
+          } catch (e) {
+              console.error("Failed to load mock data", e);
+          }
       }
       setIsLoadingProject(false);
     };
@@ -69,68 +61,16 @@ export const OrchestratorProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const saveProject = async (newState?: Partial<ProjectState>) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-        console.warn("saveProject: No authenticated user found.");
-        return;
-    }
-
     const dataToSave = newState ? { ...state, ...newState } : state;
-    // Don't save processing state
     const { isProcessing, ...persistentData } = dataToSave;
-
-    try {
-        if (projectId) {
-            console.log("Saving update for project:", projectId);
-            const { error } = await supabase
-              .from('projects')
-              .update({
-                data: persistentData,
-                current_step: dataToSave.currentStep,
-                updated_at: new Date().toISOString()
-              })
-              .eq('id', projectId);
-            
-            if (error) console.error("Error updating project:", error);
-        } else {
-            console.log("Creating new project for user:", user.id);
-            // Create new project
-            const { data, error } = await supabase
-              .from('projects')
-              .insert({
-                 user_id: user.id,
-                 name: persistentData.agent1?.solution_description?.substring(0, 50) || "Untitled Idea",
-                 data: persistentData,
-                 current_step: dataToSave.currentStep,
-                 status: 'draft'
-              })
-              .select()
-              .single();
-            
-            if (error) {
-                console.error("Error creating project:", error);
-                // Check if profile exists, if foreign key error:
-                if (error.code === '23503') { // Foreign Key Violation
-                    console.error("Profile missing! Attempting to fix...");
-                    // Try to repair profile
-                    await supabase.from('profiles').insert({
-                         id: user.id,
-                         email: user.email!,
-                         full_name: user.user_metadata?.full_name || "User",
-                         role: 'user'
-                    });
-                    // Retry save (recursive once)
-                    // For now just alert
-                }
-            }
-            if (data) {
-                console.log("Project created:", data.id);
-                setProjectId(data.id);
-            }
-        }
-    } catch (err) {
-        console.error("Unexpected error in saveProject:", err);
-    }
+    
+    // Save to LocalStorage for persistence during mock mode
+    localStorage.setItem('mock_project_data', JSON.stringify({
+        ...persistentData,
+        currentStep: dataToSave.currentStep
+    }));
+    
+    console.log("Mock Saved Project State:", persistentData);
   };
 
   // State Updates Wrapper (Auto-Save on critical updates)

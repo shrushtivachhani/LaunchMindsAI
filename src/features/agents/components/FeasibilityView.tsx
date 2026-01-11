@@ -1,48 +1,46 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useOrchestrator } from '@/features/orchestrator/context/OrchestratorContext';
 import { Button, Card } from '@/components/ui/components';
+import { AgentEngine } from '@/features/agents/utils/engine';
 import { ShieldAlert, CheckCircle2, AlertTriangle, XCircle, ArrowRight, Loader2, BarChart2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Agent2Output } from '@/features/agents/types/types';
 
 export const FeasibilityView = () => {
     const { state, setAgent2Data, nextStep, isProcessing, setIsProcessing } = useOrchestrator();
+    const hasRun = useRef(false);
 
-    const handleAnalyze = () => {
+    const handleAnalyze = async () => {
         setIsProcessing(true);
-        setTimeout(() => {
-            const mockData: Agent2Output = {
-                market: {
-                    demand: "High - Growing at 15% CAGR",
-                    competition: "Moderate - Few incumbents, no direct AI competitor",
-                    gap: "Lack of affordable CFO solutions for small teams"
-                },
-                technical: {
-                    complexity: "Medium - Requires advanced LLM integration",
-                    risk: "Dependency on 3rd party AI models"
-                },
-                financial: {
-                    capital_intensity: "Low - SaaS Model",
-                    profit_potential: "High - High gross margins (>80%)"
-                },
-                operational: {
-                    scalability: "High - Cloud native",
-                    constraints: "Customer Support load at scale"
-                },
-                legal: {
-                    risk_level: "Medium",
-                    notes: "Financial advice regulations (fintech compliance)"
-                },
-                feasibility_score: 85,
-                recommendation: "GO",
-                top_risks: ["Regulatory changes in AI", "API Cost spikes"]
-            };
-            setAgent2Data(mockData);
+        try {
+            // Real AI Call
+            const result = await AgentEngine.generateAgent2(state.agent1!, {
+                rawIdea: state.agent1?.solution_description || "Startup Idea",
+                industry: "Unknown", 
+                geography: "Global",
+                targetUserType: state.agent1?.target_customer || "Users"
+            });
+            setAgent2Data(result);
+            nextStep();
+        } catch (error: any) {
+            console.error("Agent 2 Failed:", error);
+            alert(`Analysis Failed: ${error.message}`);
+        } finally {
             setIsProcessing(false);
-        }, 2500);
+        }
     };
+
+    // Auto-Run if we have previous data but no current data (optional, keeping manual trigger for now as per UI)
+    // If you want auto-run:
+    /*
+    useEffect(() => {
+        if (state.agent1 && !state.agent2 && !hasRun.current) {
+             hasRun.current = true;
+             handleAnalyze();
+        }
+    }, [state.agent1, state.agent2]); 
+    */
 
     const hasData = !!state.agent2;
 
@@ -110,7 +108,7 @@ export const FeasibilityView = () => {
                                 Critical Risks
                             </h3>
                             <ul className="space-y-4">
-                                {state.agent2?.top_risks.map((risk, i) => (
+                                {state.agent2?.top_risks?.map((risk, i) => (
                                     <li key={i} className="flex items-start gap-3 text-sm text-red-200/90 leading-relaxed bg-red-500/10 p-3 rounded-lg border border-red-500/10">
                                         <XCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-400" />
                                         {risk}
@@ -127,11 +125,11 @@ export const FeasibilityView = () => {
                             <div className="space-y-6">
                                 <div>
                                     <span className="text-xs text-brand-secondary block mb-1">Demand Velocity</span>
-                                    <p className="font-medium text-lg text-white">{state.agent2?.market.demand}</p>
+                                    <p className="font-medium text-lg text-white">{state.agent2?.market?.demand || 'N/A'}</p>
                                 </div>
                                 <div>
                                     <span className="text-xs text-brand-secondary block mb-1">Competitive Landscape</span>
-                                    <p className="font-medium text-lg text-white">{state.agent2?.market.competition}</p>
+                                    <p className="font-medium text-lg text-white">{state.agent2?.market?.competition || 'N/A'}</p>
                                 </div>
                             </div>
                         </Card>
@@ -140,15 +138,15 @@ export const FeasibilityView = () => {
                             <div className="space-y-6">
                                 <div>
                                     <span className="text-xs text-orange-400 block mb-1">Technical Complexity</span>
-                                    <p className="font-medium text-lg text-white">{state.agent2?.technical.complexity}</p>
+                                    <p className="font-medium text-lg text-white">{state.agent2?.technical?.complexity || 'N/A'}</p>
                                 </div>
                                 <div>
                                     <span className="text-xs text-red-400 block mb-1">Compliance Barrier</span>
                                     <div className="flex items-center gap-3">
-                                        <div className={`w-2.5 h-2.5 rounded-full ${state.agent2?.legal.risk_level === 'High' ? 'bg-red-500 shadow-[0_0_10px_red]' : 'bg-yellow-500 shadow-[0_0_10px_orange]'}`} />
-                                        <p className="font-medium text-lg text-white">{state.agent2?.legal.risk_level}</p>
+                                        <div className={`w-2.5 h-2.5 rounded-full ${state.agent2?.legal?.risk_level === 'High' ? 'bg-red-500 shadow-[0_0_10px_red]' : 'bg-yellow-500 shadow-[0_0_10px_orange]'}`} />
+                                        <p className="font-medium text-lg text-white">{state.agent2?.legal?.risk_level || 'Unknown'}</p>
                                     </div>
-                                    <p className="text-xs text-gray-500 mt-2 italic">{state.agent2?.legal.notes}</p>
+                                    <p className="text-xs text-gray-500 mt-2 italic">{state.agent2?.legal?.notes}</p>
                                 </div>
                             </div>
                         </Card>

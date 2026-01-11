@@ -100,25 +100,25 @@ export const LaunchBlueprintView = () => {
                <Card className="p-6 bg-[#121421]/40 border-white/5 text-center hover:bg-[#121421]/60 transition-colors group">
                    <div className="text-xs text-gray-500 uppercase tracking-widest mb-2 group-hover:text-purple-400 transition-colors">Capital Need</div>
                    <div className="text-2xl font-bold text-white">
-                       ${state.agent5 ? Object.values(state.agent5.startup_costs).reduce((a,b)=>a+b,0).toLocaleString() : 'N/A'}
+                       ${state.agent5 ? Object.values(state.agent5.startup_costs || {}).reduce((a,b)=>a+b,0).toLocaleString() : 'N/A'}
                    </div>
                </Card>
                <Card className="p-6 bg-[#121421]/40 border-white/5 text-center hover:bg-[#121421]/60 transition-colors group">
                    <div className="text-xs text-gray-500 uppercase tracking-widest mb-2 group-hover:text-green-400 transition-colors">Profit Potential</div>
                    <div className="text-xl font-bold text-white">
-                       {state.agent2?.financial.profit_potential}
+                       {state.agent2?.financial?.profit_potential || 'N/A'}
                    </div>
                </Card>
                <Card className="p-6 bg-[#121421]/40 border-white/5 text-center hover:bg-[#121421]/60 transition-colors group">
                    <div className="text-xs text-gray-500 uppercase tracking-widest mb-2 group-hover:text-brand-accent transition-colors">Compliance</div>
                    <div className="text-2xl font-bold text-white">
-                       {state.agent3?.mandatory_documents.length} <span className="text-sm font-normal text-gray-500">Docs</span>
+                       {state.agent3?.mandatory_documents?.length || 0} <span className="text-sm font-normal text-gray-500">Docs</span>
                    </div>
                </Card>
                <Card className="p-6 bg-[#121421]/40 border-white/5 text-center hover:bg-[#121421]/60 transition-colors group">
                    <div className="text-xs text-gray-500 uppercase tracking-widest mb-2 group-hover:text-orange-400 transition-colors">Growth Channels</div>
                    <div className="text-2xl font-bold text-white">
-                       {state.agent4?.acquisition_channels.length} <span className="text-sm font-normal text-gray-500">Active</span>
+                       {state.agent4?.acquisition_channels?.length || 0} <span className="text-sm font-normal text-gray-500">Active</span>
                    </div>
                </Card>
            </div>
