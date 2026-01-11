@@ -5,6 +5,7 @@ export interface UserInputContext {
     industry?: string;
     targetUserType?: string;
     location?: string;
+    geography?: string; // Added to fix build error
     budget?: string;
     teamSize?: string;
     rawIdea: string;
