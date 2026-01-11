@@ -3,98 +3,95 @@
 
 ---
 
-## Slide 1: The Hook
-**Title**: Building Startups is Broken.
-**Subtext**: 90% of startups fail. Top reasons? No market need (42%), Ran out of cash (29%), Regulatory hurdles (18%).
-**Visual**: A chaotic visualization of a founder juggling legal, finance, product, and marketing.
+## Slide 1: Title Slide
+**Title**: LaunchMindsAI 🧠
+**Subtitle**: The Autonomous AI Co-Founder.
+**Tagline**: "From Napkin Scribble to Series-A Blueprint in 60 Seconds."
+**Footer**: Tech Stack: Next.js 16, Groq (Llama 3.3), Supabase.
 
 ---
 
-## Slide 2: The Solution
-**Title**: Meet LaunchMindsAI.
-**Content**: An autonomous multi-agent system that acts as your instant "Founding Team".
-**Key Value**: Structures chaos into a launch-ready blueprint in < 5 minutes.
--   Validated Idea
--   Financial Runway
--   Legal Compliance
--   GTM Strategy
+## Slide 2: The Logic (Problem)
+**Title**: Why Startups Fail.
+**Content**:
+-   **42%** No Market Need.
+-   **29%** Ran Out of Cash.
+-   **18%** Regulatory/Legal Issues.
+**The Insight**: Founders are passionate about the *Product*, but terrible at *Execution* (Finance, Legal, Ops).
+**The Gap**: Hiring a co-founder takes months. Hiring consultants costs $50k+.
 
 ---
 
-## Slide 3: The "Antigravity" Engine
-**Title**: How It Works (The Agent Protocol)
-**Visual**: Flowchart showing the linear dependency chain.
-**Flow**:
-1.  **Idea Architect** → Structures the Vision.
-2.  **Risk Analyst** → Criticizes & Validates.
-3.  **Compliance Lead** → Checks Laws.
-4.  **Growth Strategist** → Finds Customers.
-5.  **CFO** → Allocates Capital.
-6.  **Orchestrator** → Compiles the Blueprint.
+## Slide 3: The Solution
+**Title**: An AI Execution Team.
+**Visual**: User enters an idea → 5 Agents activate → Verified Blueprint emerges.
+**Value Prop**:
+1.  **Instant Structure**: Chaos to Order immediately.
+2.  **Cognitive Audit**: It doesn't just agree; it criticizes and stress-tests.
+3.  **Full Coverage**: Covers Feasibility, Legal, Growth, and Finance.
 
 ---
 
-## Slide 4: Deep Dive - Agent 01 & 02
-**Title**: Vision & Validation.
-**Left Panel (Idea Architect)**:
--   **Role**: Turns "Uber for X" into a proper Business Model Canvas.
--   **Output**: Problem/Solution fit, Revenue Streams.
-**Right Panel (Risk Analyst)**:
--   **Role**: The "Pessimist". Real-time feasibility scoring.
--   **Output**: Market Saturation Checks, Tech Complexity Score.
+## Slide 4: The Technology (The "Brain")
+**Title**: Powered by Llama 3.3 (70B) on Groq.
+**Why Groq?**
+-   **Speed**: 300+ tokens/second. The interface feels "alive".
+-   **Reasoning**: Llama 3.3 offers GPT-4 class reasoning for complex financial modeling.
+**Architecture**:
+-   **Server Actions**: API keys never leak to the client.
+-   **Strict JSON**: We enforce rigid schemas so the AI output is always valid code.
 
 ---
 
-## Slide 5: Deep Dive - Agent 03 & 04
-**Title**: Strategy & Operations.
-**Left Panel (Compliance)**:
--   **Role**: Ensures you don't get sued.
--   **Output**: GDPR checks, Incorporation documents list.
-**Right Panel (Growth)**:
--   **Role**: Finds your first 100 users.
--   **Output**: ICP (Ideal Customer Persona), Paid/Organic Channels.
+## Slide 5: The Agent Workflow (Deep Dive)
+**Step 1: Idea Architect**: "I transform vague inputs into a Business Model Canvas."
+**Step 2: Risk Analyst**: "I run Monte Carlo simulations to find why you might fail."
+**Step 3: Compliance Lead**: "I check GDPR, Incorporation laws, and IP rights."
+**Step 4: Growth Strategist**: "I find your ICP and build a pricing tiered model."
+**Step 5: CFO**: "I calculate your Startup CapEx, OpEx, and Runway."
 
 ---
 
-## Slide 6: Deep Dive - Agent 05 (The CFO)
-**Title**: Financial Reality.
-**Content**: Most founders guess their budget. We calculate it.
-**Features**:
--   **Burn Rate Calculator**: Fixed vs Variable costs.
--   **Runway Simulator**: "How long until you die?"
--   **Startup Costs**: Realistic API, Server, and Incorporation fees.
+## Slide 6: The User Experience
+**Design Language**: "Cosmic Glass"
+-   **Theme**: Deep Space Dark Mode with Neon Gradients.
+-   **Interactivity**: Framer Motion animations for every state change.
+-   **Feedback**: Real-time streaming status ("Investigating Competitors...", "Calculating Taxes...").
 
 ---
 
-## Slide 7: The MVP Architecture
-**Title**: Built for Scale.
-**Tech Stack Grid**:
--   **Frontend**: Next.js 14 (App Router) + Tailwind CSS.
--   **Design**: "Cosmic Glass" Aesthetic (Framer Motion).
--   **Logic**: Type-Safe TypeScript Agent Engine.
--   **Scalability**: Modular Agent Architecture (Cloud-Function ready).
+## Slide 7: Security & Governance
+**Title**: Enterprise Ready.
+**Authentication**:
+-   Supabase Auth (JWTs, Secure Cookies).
+-   **Role-Based Access Control (RBAC)**: Strict barrier between Admins and Users.
+**Admin Panel**:
+-   Monitor system health.
+-   View every User Project.
+-   Track AI Token usage.
 
 ---
 
-## Slide 8: Live Demo Flow
-**Script**:
-1.  **Landing**: "Click 'Launch App' - smooth transition."
-2.  **Input**: "Type: 'A drone delivery service for pizza'."
-3.  **Process**: Watch the Timeline animate as agents "think".
-4.  **Result**: Show the final Executive Blueprint with a $50k startup cost and "High Risk" regulatory flag.
+## Slide 8: Live Demo
+**Scenario**: "A subscription service for renting high-end designer sneakers."
+**Walkthrough**:
+1.  **Input**: Type the idea.
+2.  **Feasibility**: AI warns about hygiene regulations (Compliance) and inventory costs (Finance).
+3.  **Growth**: AI suggests "Influencer Marketing" as top channel.
+4.  **Finance**: AI projects $15k startup cost for inventory.
+5.  **Blueprint**: Final PDF-ready report generated.
 
 ---
 
-## Slide 9: Future Roadmap
-**Title**: Beyond the MVP.
+## Slide 9: Roadmap
 **Q2 2026**:
--   **Real LLM Integration**: Connect OpenAI/Anthropic keys.
--   **Document Generation**: Auto-generate actual PDF contracts.
--   **Investor Matching**: Match high-score blueprints with VCs.
+-   **Document Generation**: Real PDF contracts (NDAs, Founder Agreements).
+-   **Stripe Integration**: Charge users for "Deep Dive" reports.
+-   **Investor API**: Direct feed to VC deal-flow platforms.
 
 ---
 
 ## Slide 10: Conclusion
-**Title**: Start Smarter.
-**Call to Action**: "Don't build alone. Build with LaunchMindsAI."
-**Contact**: [Your Name/Team]
+**Title**: The Future of founding.
+**Summary**: LaunchMindsAI democratizes access to high-level business intelligence.
+**Call to Action**: "Let's build the next unicorn."

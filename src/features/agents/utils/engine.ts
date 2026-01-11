@@ -15,7 +15,9 @@ export class AgentEngine {
         try {
             // Call Server Action
             const { generateAIResponse } = await import('../actions/groqActions');
-            return await generateAIResponse(systemPrompt, userPrompt, context) as T;
+            // Append timestamp to prevent caching
+            const dynamicContext = context + `\n\n[System Timestamp: ${Date.now()}]`;
+            return await generateAIResponse(systemPrompt, userPrompt, dynamicContext) as T;
         } catch (error) {
             console.error("Gemini Generation Error:", error);
             throw new Error(`Failed to generate AI response: ${error instanceof Error ? error.message : String(error)}`);

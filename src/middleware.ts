@@ -1,40 +1,59 @@
-
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-    const response = NextResponse.next();
+    let response = NextResponse.next({
+        request: {
+            headers: request.headers,
+        },
+    })
 
-    // MOCK AUTH CHECK
-    const mockSession = request.cookies.get('mock_session')?.value;
-    const mockRole = request.cookies.get('mock_user_role')?.value;
+    // 1. Init Supabase SSR Client
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                getAll() {
+                    return request.cookies.getAll()
+                },
+                setAll(cookiesToSet) {
+                    cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+                    response = NextResponse.next({
+                        request,
+                    })
+                    cookiesToSet.forEach(({ name, value, options }) =>
+                        response.cookies.set(name, value, options)
+                    )
+                },
+            },
+        }
+    )
 
-    // 1. Admin Route Protection
-    if (request.nextUrl.pathname.startsWith('/admin')) {
-        if (request.nextUrl.pathname === '/admin/login') return response;
+    // 2. Fetch User
+    const { data: { user } } = await supabase.auth.getUser()
 
-        if (!mockSession || mockRole !== 'admin') {
-            return NextResponse.redirect(new URL('/admin/login', request.url));
+    const path = request.nextUrl.pathname;
+
+    // 3. Protected Routes Logic
+    if (!user) {
+        if (path.startsWith('/admin')) {
+            // Exclude login page to prevent redirect loop
+            if (path !== '/admin/login') {
+                return NextResponse.redirect(new URL('/admin/login', request.url))
+            }
+        } else if (path.startsWith('/dashboard')) {
+            return NextResponse.redirect(new URL('/auth/login', request.url))
+        }
+    } else {
+        // User is logged in
+        if (path === '/auth/login' || path === '/auth/register') {
+            return NextResponse.redirect(new URL('/dashboard', request.url))
         }
     }
 
-    // 2. User Route Protection
-    if (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/profile')) {
-        if (!mockSession) {
-            return NextResponse.redirect(new URL('/auth/login', request.url));
-        }
-    }
-
-    // 3. Auth Page Redirect
-    if (request.nextUrl.pathname.startsWith('/auth/')) {
-        if (mockSession) {
-            return NextResponse.redirect(new URL('/dashboard', request.url));
-        }
-    }
-
-    return response;
+    return response
 }
-
 export const config = {
     matcher: [
         /*

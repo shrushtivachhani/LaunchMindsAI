@@ -19,28 +19,38 @@ export default function LoginPage() {
     setIsLoading(true);
     setError('');
 
-    // MOCK USER AUTH
-    setTimeout(() => {
-        if (email.toLowerCase() === 'admin@launchminds.ai') {
-            setError("Please use the Admin Login page for this account.");
-            setIsLoading(false);
-            return;
-        }
-
-        if (password.length < 6) {
-             setError("Password must be at least 6 characters.");
-             setIsLoading(false);
-             return;
-        }
-
-        // Success for any other user
-        document.cookie = "mock_session=user; path=/";
-        document.cookie = "mock_user_email=" + email + "; path=/";
-        document.cookie = "mock_user_role=user; path=/";
+    try {
+        const supabase = createClient();
         
-        router.push('/dashboard');
+        // 1. Authenticate
+        const { data, error: authError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        if (authError) throw authError;
+
+        // 2. Refresh router to update session state
         router.refresh();
-    }, 800);
+
+        // 3. Check Role for Enforcement via Database
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", data.user.id)
+            .single();
+
+        if (profile?.role === "admin") {
+             router.push("/admin/dashboard");
+        } else {
+             router.push("/dashboard");
+        }
+
+    } catch (err: any) {
+        setError(err.message || "Login failed");
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (

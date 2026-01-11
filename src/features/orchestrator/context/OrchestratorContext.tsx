@@ -34,13 +34,13 @@ export const OrchestratorProvider = ({ children }: { children: ReactNode }) => {
   const [isLoadingProject, setIsLoadingProject] = useState(true);
   const supabase = createClient();
 
-  // MOCK PERSISTENCE
+  // CLIENT-SIDE PERSISTENCE (Drafts)
   useEffect(() => {
     const loadProject = async () => {
       // Allow UI to settle
       await new Promise(r => setTimeout(r, 500));
       
-      const saved = localStorage.getItem('mock_project_data');
+      const saved = localStorage.getItem('local_project_draft');
       if (saved) {
           try {
               const parsed = JSON.parse(saved);
@@ -51,7 +51,7 @@ export const OrchestratorProvider = ({ children }: { children: ReactNode }) => {
               }));
               setProjectId('mock-project-id');
           } catch (e) {
-              console.error("Failed to load mock data", e);
+              console.error("Failed to load draft data", e);
           }
       }
       setIsLoadingProject(false);
@@ -64,13 +64,13 @@ export const OrchestratorProvider = ({ children }: { children: ReactNode }) => {
     const dataToSave = newState ? { ...state, ...newState } : state;
     const { isProcessing, ...persistentData } = dataToSave;
     
-    // Save to LocalStorage for persistence during mock mode
-    localStorage.setItem('mock_project_data', JSON.stringify({
+    // Save to LocalStorage for persistence across reloads
+    localStorage.setItem('local_project_draft', JSON.stringify({
         ...persistentData,
         currentStep: dataToSave.currentStep
     }));
     
-    console.log("Mock Saved Project State:", persistentData);
+    console.log("Draft Saved:", persistentData);
   };
 
   // State Updates Wrapper (Auto-Save on critical updates)

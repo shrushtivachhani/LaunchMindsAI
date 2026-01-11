@@ -35,16 +35,15 @@ export default function RegisterPage() {
 
         if (signUpError) throw signUpError;
 
-        if (data?.user && !data.session) {
-            // Email confirmation required logic
-            setError("Registration successful! Please check your email to confirm your account.");
-            setIsLoading(false);
-            return;
+        if (data.user) {
+             // Successful signup
+             // Force logout to ensure they log in manually as requested
+             await supabase.auth.signOut();
+             
+             // Redirect to Landing Page
+             router.push("/");
+             return;
         }
-
-        // Auto login handling or redirect
-        router.push('/dashboard');
-        router.refresh();
     } catch (err: any) {
         setError(err.message || "Registration failed");
     } finally {

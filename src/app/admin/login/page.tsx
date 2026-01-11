@@ -20,21 +20,39 @@ export default function AdminLoginPage() {
     setIsLoading(true);
     setError(null);
 
-    // MOCK AUTHENTICATION - NO DATABASE REQUIRED
-    setTimeout(() => {
-        if (email.toLowerCase() === 'admin@launchminds.ai' && password === 'admin123') {
-            // Set simple cookie for middleware to read
-            document.cookie = "mock_session=admin; path=/";
-            document.cookie = "mock_user_email=" + email + "; path=/";
-            document.cookie = "mock_user_role=admin; path=/";
-            
-            router.push('/admin/dashboard');
-            router.refresh();
-        } else {
-            setError("Invalid Admin Credentials. try: admin@launchminds.ai / admin123");
-            setIsLoading(false);
+    try {
+        const supabase = createClient();
+
+        // 1. Sign In
+        const { data, error: authError } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (authError) throw authError;
+
+        // 2. Refresh router to update session
+        router.refresh();
+
+        // 3. Strict Admin Role Check
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", data.user.id)
+            .single();
+
+        if (profile?.role !== 'admin') {
+            await supabase.auth.signOut(); // Force logout if not admin
+            throw new Error("Access Denied: This account does not have Administrator privileges.");
         }
-    }, 1000); 
+
+        router.push('/admin/dashboard');
+
+    } catch (err: any) {
+        setError(err.message || "Admin authentication failed");
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (

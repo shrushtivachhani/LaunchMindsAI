@@ -4,140 +4,140 @@
 # 🧠 LaunchMindsAI
 ### The Autonomous Startup Co-Founder
 
-> **Turn raw ideas into launch-ready startups with an AI executive team.**
+> **An Enterprise-Grade Multi-Agent System that turns raw ideas into Series-A ready startup blueprints using Generative AI (Llama 3.3).**
 
-[![Status](https://img.shields.io/badge/Status-Beta-blueviolet?style=for-the-badge)](https://github.com/shrushtivachhani/LaunchMindsAI)
-[![Stack](https://img.shields.io/badge/Stack-Next.js_16.1_|_TS_|_Tailwind_v4-000000?style=for-the-badge)](https://nextjs.org)
+[![Status](https://img.shields.io/badge/Production-Beta_v1.0-blueviolet?style=for-the-badge)](https://github.com/shrushtivachhani/LaunchMindsAI)
+[![Stack](https://img.shields.io/badge/Stack-Next.js_16_|_Groq_|_Supabase-000000?style=for-the-badge)](https://nextjs.org)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 </div>
 
 ---
 
-## 🚀 Overview
+## 🚀 Executive Summary
 
-**LaunchMindsAI** is a multi-agent orchestration system designed to act as a virtual founding team. It guides users from a "napkin scribble" idea to a fully validated, legally compliant, and financially structured execution plan.
+**LaunchMindsAI** is not just a chatbot. It is a **computational founding team**.
 
-Most startups fail not because of bad ideas, but because of **bad execution, ignored risks, and poor financial planning.** LaunchMindsAI solves this by simulating a team of strict, domain-expert agents who don't just "chat" but **work**.
+It orchestrates **5 Specialized AI Agents** (Idea Architect, Risk Analyst, Compliance Officer, Growth Strategist, CFO) to sequentially audit, refine, and structure a business concept. The system replaces weeks of human research with a 60-second autonomous workflow, powered by the **Groq Cloud API** running **Meta's Llama 3.3-70b**.
+
+The platform is built on a **Feature-Based Architecture**, ensuring strict separation of concerns, enterprise-grade security via **Supabase Auth** (with Admin/User separation), and persistent data storage.
 
 ---
 
-## 📂 Developer Guide & Structure
+## 🏛️ System Architecture
 
-Understanding the codebase layout is crucial for extending the platform.
+The project follows a modern **Modular Monolith** structure using Next.js 16 App Router.
 
 ```bash
 LaunchMindsAI/
-├── public/                 # Static assets (images, fonts, svgs like grid.svg)
 ├── src/
-│   ├── app/                # Next.js App Router (Page-based routing)
-│   │   ├── admin/          # [NEW] Admin Panel Routes
-│   │   │   ├── dashboard/  # System Overview & Metrics
-│   │   │   ├── users/      # User Management Interface
-│   │   │   └── agents/     # AI Agent Status Monitor
-│   │   ├── auth/           # Authentication Routes
-│   │   │   ├── login/      # User Login Page
-│   │   │   └── register/   # User Registration Page
-│   │   ├── dashboard/      # Main User Application (The "Command Center")
-│   │   ├── globals.css     # Global Styles (Tailwind v4 imports + Custom Themes)
-│   │   ├── layout.tsx      # Root Layout (Fonts: Outfit/JetBrains Mono)
-│   │   └── page.tsx        # High-Conversion Landing Page
-│   ├── components/
-│   │   ├── agents/         # THE AI AGENTS (Core Features)
-│   │   │   ├── IdeaArchitectView.tsx   # Agent 1: Business Canvas
-│   │   │   ├── FeasibilityView.tsx     # Agent 2: Risk Analysis
-│   │   │   ├── ComplianceView.tsx      # Agent 3: Legal Checks
-│   │   │   ├── GrowthView.tsx          # Agent 4: Marketing Strategy
-│   │   │   ├── FinanceView.tsx         # Agent 5: Financial Modeling
-│   │   │   └── LaunchBlueprintView.tsx # Final Output Generator
-│   │   ├── admin/          # Admin-specific Components (Sidebar)
-│   │   ├── layout/         # Shared Layouts (User Sidebar, Header)
-│   │   ├── orchestrator/   # State Management (React Context for Multi-step Wizard)
-│   │   └── ui/             # Design System (Buttons, Cards, Inputs, Tables)
-│   └── lib/
-│       ├── agents/         # AGENT LOGIC & TYPES
-│       │   ├── engine.ts   # The "Brain" (Currently Mocked for Demo)
-│       │   └── types.ts    # TypeScript definitions for Agent I/O
-│       └── utils.ts        # CN (Classname) helper
-├── postcss.config.mjs      # Tailwind CSS Post-Processing
-├── tailwind.config.ts      # DESIGN TOKENS (Colors, Radius, Animations)
-└── README.md               # You are here
+│   ├── app/                    # Routing Layer (Page Controllers)
+│   │   ├── admin/              # Protected Admin Dashboard
+│   │   ├── auth/               # Authentication (Login/Register)
+│   │   ├── dashboard/          # User Workspace (The Agent Interface)
+│   │   └── page.tsx            # High-Conversion Landing Page
+│   │
+│   ├── features/               # DOMAIN LOGIC (The Core)
+│   │   ├── admin/              # Admin Panel Logic
+│   │   ├── agents/             # AI AGENT INFRASTRUCTURE
+│   │   │   ├── actions/        # Server Actions (groqActions.ts - Secure API Calls)
+│   │   │   ├── components/     # Agent UI Views (FeasibilityView, FinanceView...)
+│   │   │   ├── types/          # Strict TypeScript Interfaces for AI JSON Output
+│   │   │   └── utils/          # Prompt Engineering & Context Injection
+│   │   └── orchestrator/       # State Management (React Context / Wizard Logic)
+│   │
+│   ├── lib/                    # Shared Infrastructure
+│   │   ├── gemini/             # Legacy Gemini Client
+│   │   └── supabase/           # Supabase Client & Server Utilities
+│   │
+│   ├── components/             # Shared UI Design System
+│   │   ├── ui/                 # Atomic Components (Buttons, Cards, Inputs)
+│   │   └── layout/             # Global Layouts (Sidebar, Headers)
+│   │
+│   ├── middleware.ts           # Edge Middleware (Role-Based Access Control)
+│   └── globals.css             # Tailwind v4 + Custom "Cosmic Glass" Theme
+└── .env.local                  # Secrets (Groq API Key, Supabase Keys)
 ```
 
 ---
 
-## 🚧 Roadmap: What to Fix & Add
+## 🤖 The Agent Protocol (AI Engine)
 
-This project is currently in **Beta Phase 1 (UI/UX & Architecture)**. The following modules need to be implemented for v1.0 Production Release.
+The system uses a **Linear Waterfall Orchestration** pattern. Data flows securely from Agent 1 to Agent 5, building context at every step.
 
-### 🔴 Critical (To-Do)
-1.  **Real Backend Integration**:
-    -   *Current*: `src/lib/agents/engine.ts` uses mock data (`setTimeout`) to simulate AI.
-    -   *Fix*: Replace mock functions with API calls to OpenAI (GPT-4) or Anthropic (Claude 3.5).
-2.  **Database Persistence**:
-    -   *Current*: Data is held in React State (`OrchestratorContext`); it vanishes on refresh.
-    -   *Fix*: Integrate MongoDB/PostgreSQL to save User Projects and Agent Outputs permanently.
-3.  **Authentication Logic**:
-    -   *Current*: Visual-only login (`setTimeout` delay).
-    -   *Fix*: Connect NextAuth.js or Supabase Auth to handle real user sessions.
+| Agent | Model | Role & Output |
+| :--- | :--- | :--- |
+| **01. Idea Architect** | `llama-3.3-70b` | **Input**: Raw text.<br>**Action**: Structuring.<br>**Output**: Business Model Canvas, Value Prop, Problem/Solution Fit. |
+| **02. Risk Analyst** | `llama-3.3-70b` | **Input**: Agent 1 Data.<br>**Action**: Stress Testing.<br>**Output**: Feasibility Score (0-100), Market Risks, Technical Bottlenecks. |
+| **03. Compliance Lead** | `llama-3.3-70b` | **Input**: Location + Industry.<br>**Action**: Legal Audit.<br>**Output**: Mandatory Registrations, GDPR/Data Laws, Contracts List. |
+| **04. Growth Strategist** | `llama-3.3-70b` | **Input**: Target Audience.<br>**Action**: GTM Planning.<br>**Output**: ICP Personas, Acquisition Channels, Pricing Strategy tiers. |
+| **05. Chief Financial Officer** | `llama-3.3-70b` | **Input**: Business Model.<br>**Action**: Financial Modeling.<br>**Output**: Startup Costs, Monthly Burn Rate, Runway Calculation, P&L. |
 
-### 🟡 Improvements (Upcoming)
-4.  **PDF Generation**:
-    -   Implement `react-pdf` to allow users to actually download the "Launch Blueprint".
-5.  **Payment Gateway**:
-    -   Integrate Stripe for "Premium" tiers (unlocking Agent 4 & 5).
+### 🧠 Real Intelligence
+We use **Groq** for ultra-low latency inference. The prompts (`src/features/agents/utils/prompts.ts`) employ **Strict JSON Enforcing** to ensure the AI returns structured data that the UI can render perfectly, preventing crashes ("defensive coding").
 
 ---
 
-## 🤖 The AI Agent Team
+## 🔐 Security & Operations
 
-The system is composed of 5 specialized autonomous agents, managed by a central **Orchestrator Engine**.
+### Authentication
+*   **Provider**: Supabase Auth (Email/Password).
+*   **Storage**: Secure HttpOnly Cookies (SSR).
+*   **RBAC**: Strict separation between `admin` and `user` roles.
+    *   **Admins**: Can access `/admin/*`, view all users, monitor agent usage.
+    *   **Users**: Can access `/dashboard`, create projects.
+    *   **Middleware**: Intercepts requests at the Edge to enforce these rules.
 
-| Agent | Role | Responsibility | Output |
-| :--- | :--- | :--- | :--- |
-| **01. Idea Architect** 🧠 | The Visionary | Structures raw input into a clear value prop. | Business Canvas, Problem/Solution Fit |
-| **02. Risk Analyst** 🛡️ | The Skeptic | Stress-tests feasibility (Market, Tech, Legal). | Feasibility Score (0-100), Risk Matrix |
-| **03. Compliance Lead** ⚖️ | The Lawyer | Identifies mandatory registrations & docs. | Legal Checklist, GDPR/DPDP Status |
-| **04. Growth Strategist** 📈 | The Marketer | Defines ICP and Go-To-Market channels. | Acquisition Plan, Pricing Strategy |
-| **05. Financial Planner** 💰 | The CFO | Calculates burn rate, runway, and costs. | P&L Forecast, Cash Flow, Startup Costs |
-
----
-
-## 🛠️ Installation & Setup
-
-### Prerequisites
--   Node.js 18+
--   npm or yarn
-
-### Steps
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/shrushtivachhani/LaunchMindsAI.git
-
-# 2. Navigate to project directory
-cd LaunchMindsAI
-
-# 3. Install dependencies
-npm install
-
-# 4. Run the development server
-npm run dev
-```
-
-Visit `http://localhost:3000` to verify the installation.
+### Database (PostgreSQL)
+*   **Profiles Table**: Stores users, roles, and usage quotas.
+*   **Projects Table**: Stores the JSON output of every agent run (Persistence).
+*   **RLS (Row Level Security)**: Users can ONLY see their own projects. Admins can see everything.
 
 ---
 
-## 📄 License
+## 🛠️ Technology Stack
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+*   **Frontend**: Next.js 16.1 (Turbopack), React 19, Tailwind CSS v4.
+*   **Animation**: Framer Motion (Complex orchestrations and micro-interactions).
+*   **Backend / API**: Next.js Server Actions.
+*   **AI Inference**: Groq SDK (`groq-sdk`), Meta Llama 3.3.
+*   **Database**: Supabase (PostgreSQL).
+*   **Deployment**: Vercel Ready.
+
+---
+
+## 🔌 Setup & Installation
+
+1.  **Clone & Install**
+    ```bash
+    git clone https://github.com/shrushtivachhani/LaunchMindsAI.git
+    cd LaunchMindsAI
+    npm install
+    ```
+
+2.  **Environment Variables (`.env.local`)**
+    ```env
+    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+    GROQ_API_KEY=gsk_...
+    ```
+
+3.  **Run Development Server**
+    ```bash
+    npm run dev
+    ```
+
+4.  **Admin Access**
+    *   There is no "Sign Up" for Admins (Security).
+    *   Create a user via Register page.
+    *   Manually update their role to `admin` in Supabase `profiles` table.
+    *   Login at `/admin/login`.
 
 ---
 
 <div align="center">
 
-**Built with ❤️ for Founders.**  
-*Part of the Google Deepmind Agentic Coding Challenge.*
+**Built by the LaunchMindsAI Team.**  
+*Empowering founders with the intelligence of a Fortune 500 executive team.*
 
 </div>
